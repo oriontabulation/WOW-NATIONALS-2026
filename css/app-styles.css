@@ -1,0 +1,937 @@
+/* ============================================================
+   APP-STYLES.CSS  —  Orion Tournament Manager
+   Load order:  main.css → admin.css → patches.css → app-styles.css
+
+   RULES:
+   ① No :root declarations — never redefine tokens from main.css.
+   ② No class that already exists in main.css or patches.css.
+   ③ Every colour/radius/shadow uses the tokens already on :root:
+        Brand   → --orange-primary  --orange-hover  --orange-light
+                   --orange-glow    (all overridden by patches.js)
+        Theme   → --t-brand  --t-brand-hover  --t-brand-light
+                   --t-brand-glow  --t-header-bg
+        Palette → --cosmic-deep  --cosmic-slate
+                   --bg-card  --bg-light  --bg-page
+                   --border  --border-light
+                   --text-primary  --text-secondary  --text-muted
+                   --success/light/dark  --danger/light/dark
+                   --warning/light  --info/light
+        Shape   → --radius-sm(4px)  --radius-md(8px)
+                   --radius-lg(12px)  --radius-xl(16px)  --radius-full
+        Depth   → --shadow-sm  --shadow-md  --shadow-lg
+        Motion  → --transition-base  --transition-fast
+        Space   → --spacing-xs/sm/md/lg/xl
+
+   WHAT THIS FILE ADDS (net-new only):
+     Buttons      → .btn-ghost  .btn-logout  .btn-xs  .btn-full
+     Auth modal   → .auth-*  .auth-tab-btn  .form-input  .form-select
+                    .form-label  .form-hint  .form-error  .form-note
+                    .form-checkbox-label  .auth-link  .auth-close-btn
+     Badges       → .badge-neutral  .badge-mono
+     Status chips → .status-active  .status-eliminated  .status-broke
+                    .status-inelig  .status-missed  .status-blinded
+     Tables       → .table-wrap  .data-table  modifiers  .th-*  .td-*
+     Filter bars  → .filter-bar  .standings-filter-bar  and sub-elements
+     Dropdown     → .dropdown  .dropdown-menu(.is-open)
+                    [items reuse .dropdown-item from main.css]
+     Cards        → .card  .card__*
+     Components   → .empty-state  .speaker-section  .profile-wrap
+                    .motion-card  .result-card  .result-debate
+                    .break-table-wrap  .inelig-wrap
+     Bulk disable → .bulk-disable-*  .modal-actions
+     Utilities    → .u-*
+   ============================================================ */
+
+
+/* ════════════════════════════════════════════════════════════
+   1. BUTTON SUPPLEMENTS
+   main.css owns: button  .btn-primary  .btn-secondary  .btn-success
+                  .btn-danger  .btn-warning  .btn-outline  .btn-link
+                  .btn-icon  .btn-sm  .btn-lg  .btn-block
+   We add only the missing variants.
+   ════════════════════════════════════════════════════════════ */
+
+/* Ghost — transparent, muted text, brand on hover */
+.btn-ghost {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    padding: 6px 10px;
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    transition: color var(--transition-fast), background var(--transition-fast);
+}
+.btn-ghost:hover {
+    color: var(--t-brand, var(--orange-primary));
+    background: var(--t-brand-light, var(--orange-light));
+}
+
+/* Logout — lives inside the dark header, pill style matching patches.css */
+.btn-logout {
+    background: rgba(255,255,255,0.10);
+    color: rgba(255,255,255,0.88);
+    border: 1px solid rgba(255,255,255,0.24);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+.btn-logout:hover {
+    background: rgba(255,255,255,0.20);
+    border-color: rgba(255,255,255,0.42);
+}
+
+/* Extra-small — main.css has .btn-sm, we add .btn-xs */
+.btn-xs {
+    padding: 4px 10px !important;
+    font-size: 12px !important;
+}
+
+/* Full-width helper (main.css .btn-block sets width:100% on <button>;
+   .btn-full also sets justify-content:center for flex context) */
+.btn-full {
+    width: 100%;
+    justify-content: center;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   2. AUTH MODAL
+   main.css owns: .modal-overlay  .modal-content  .modal-tabs
+                  .modal-tab  .modal-tab.active  .modal-header
+                  .modal-form  .modal-footer  .form-group  .form-checkbox
+                  .error-message  .btn-link
+   We add only the auth-specific wrapper classes.
+   ════════════════════════════════════════════════════════════ */
+
+.auth-logo-wrap {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.auth-logo {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+    display: inline-block;
+}
+.auth-brand {
+    color: var(--text-muted);
+    margin: 4px 0 0;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* Tab switcher inside auth modal
+   Uses .modal-tab from main.css for individual tabs;
+   .auth-tab-btn is the alias auth.js applies — sync appearance */
+.auth-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 25px;
+}
+.auth-tab-btn {
+    flex: 1;
+    padding: 15px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-family: inherit;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+.auth-tab-btn:hover {
+    color: var(--text-primary);
+}
+.auth-tab-btn.is-active {
+    border-bottom-color: var(--t-brand, var(--orange-primary));
+    color: var(--t-brand, var(--orange-primary));
+}
+
+/* Standalone form field classes
+   Use these when the element is NOT inside a .form-group (auth.js injects
+   them at the modal level where main.css .form-group rules don't cascade) */
+.form-label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+.form-label .required { color: var(--danger); }
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    box-sizing: border-box;
+    transition: border-color var(--transition-fast),
+                box-shadow var(--transition-fast);
+}
+.form-input--lg { padding: 14px; font-size: 15px; }
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: var(--t-brand, var(--orange-primary));
+    box-shadow: 0 0 0 3px var(--t-brand-glow, var(--orange-glow));
+}
+.form-input::placeholder { color: var(--text-muted); }
+
+.form-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 5px;
+}
+
+/* Toggle-based error block (different from patches.css .error-message
+   which is always visible; this one toggles via JS .is-visible) */
+.form-error {
+    display: none;
+    background: var(--danger-light);
+    color: var(--danger-dark);
+    padding: 12px;
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+    font-size: 14px;
+    border-left: 3px solid var(--danger);
+}
+.form-error.is-visible { display: block; }
+
+.form-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.form-note {
+    background: var(--bg-light);
+    padding: 15px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.auth-divider { text-align: center; margin-bottom: 15px; }
+
+.auth-link {
+    color: var(--t-brand, var(--orange-primary));
+    font-size: 14px;
+    text-decoration: none;
+    font-family: inherit;
+}
+.auth-link:hover { text-decoration: underline; }
+
+.auth-footer { margin-top: 20px; text-align: center; }
+
+.auth-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: underline;
+    font-family: inherit;
+}
+.auth-close-btn:hover { color: var(--text-primary); }
+
+
+/* ════════════════════════════════════════════════════════════
+   3. BADGE SUPPLEMENTS
+   main.css owns: .badge  .badge-primary  .badge-success  .badge-danger
+                  .badge-warning  .badge-info  .badge-muted
+                  .role-badge  .role-admin/judge/team/public
+                  .status-badge  (with .active .breaking .eliminated .pending)
+                  .locked-badge  .locked-badge--danger/warning/info
+   We add only missing variants.
+   ════════════════════════════════════════════════════════════ */
+
+/* Neutral pill — grey, no colour */
+.badge-neutral {
+    background: var(--bg-light);
+    color: var(--text-muted);
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+/* Monospace pill — for codes / IDs */
+.badge-mono {
+    background: var(--bg-light);
+    color: var(--text-primary);
+    font-family: monospace;
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: var(--radius-sm);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+}
+
+/* ── Standalone status chips (not .status-badge modifiers)
+   Used directly in JS-rendered table cells                 ── */
+.status-active {
+    background: var(--success-light);
+    color: var(--success-dark);
+    padding: 5px 14px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+}
+.status-eliminated {
+    background: var(--danger-light);
+    color: var(--danger-dark);
+    padding: 5px 14px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+}
+.status-broke {
+    background: var(--warning-light);
+    color: #92400e;
+    padding: 5px 14px;
+    border-radius: var(--radius-full);
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-block;
+}
+.status-inelig {
+    background: var(--danger-light);
+    color: #991b1b;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 10px;
+    font-weight: 700;
+    display: inline-block;
+    cursor: default;
+}
+.status-missed {
+    background: var(--warning-light);
+    color: #92400e;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    font-size: 10px;
+    font-weight: 600;
+    display: inline-block;
+}
+.status-blinded {
+    background: var(--warning-light);
+    color: #92400e;
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    display: inline-block;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   4. CARD (generic .section alternative used in JS views)
+   main.css owns .section; .card is a separate net-new class.
+   ════════════════════════════════════════════════════════════ */
+.card {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+}
+.card + .card { margin-top: 24px; }
+
+.card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+.card__title    { margin: 0; color: var(--text-primary); }
+.card__subtitle { margin: 4px 0 0; color: var(--text-muted); font-size: 14px; }
+
+
+/* ════════════════════════════════════════════════════════════
+   5. TABLES
+   Base <table>/<th>/<td> styled by main.css.
+   These classes add semantic modifiers on top.
+   ════════════════════════════════════════════════════════════ */
+.table-wrap { overflow-x: auto; }
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+    background: var(--bg-card);
+}
+.data-table--sm { min-width: 480px; }
+.data-table--md { min-width: 700px; }
+
+.data-table thead tr {
+    background: linear-gradient(145deg, var(--bg-light), var(--bg-page));
+}
+.data-table thead th {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.data-table tbody tr:nth-child(even) { background: var(--bg-light); }
+.data-table tbody tr:nth-child(odd)  { background: var(--bg-card);  }
+.data-table tbody tr:hover           { background: var(--bg-page);  }
+
+.data-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-light);
+    color: var(--text-primary);
+    vertical-align: middle;
+    font-size: 0.95rem;
+}
+
+/* Dark gradient header — standings table */
+.data-table--dark-head thead tr {
+    background: linear-gradient(145deg, #1e293b, #334155);
+}
+.data-table--dark-head thead th {
+    color: #ffffff;
+    border-bottom-color: rgba(255,255,255,0.1);
+}
+/* Inside a dark-head table, ALL th overrides are stripped back to plain white —
+   th-accent / th-reply colour rules must NOT bleed in from the light-theme modifiers */
+.data-table--dark-head thead th.th-accent,
+.data-table--dark-head thead th.th-reply,
+.data-table--dark-head thead th.th-wins,
+.data-table--dark-head thead th.th-total {
+    background: transparent !important;
+    color: #ffffff !important;
+}
+
+/* Column modifiers (on <th>) */
+.th-center { text-align: center !important; }
+.th-accent {
+    background: var(--t-brand-light, var(--orange-light)) !important;
+    color: var(--t-brand, var(--orange-primary)) !important;
+}
+.th-reply  { background: #fff3cd !important; color: #92400e !important; }
+
+/* Cell modifiers (on <td>) */
+.td-center { text-align: center; }
+.td-muted  { text-align: center; color: var(--text-muted); }
+.td-rank   { font-weight: 700; }
+.td-score  { text-align: center; font-weight: 500; }
+.td-wins {
+    text-align: center;
+    font-weight: 700;
+    color: var(--text-primary);   /* uniform with td-total — no accent colour */
+}
+.td-total  { text-align: center; font-weight: 700; }
+.td-avg    { text-align: center; color: var(--text-muted); }
+.td-accent {
+    text-align: center;
+    background: var(--t-brand-light, var(--orange-light));
+    font-weight: 700;
+    color: var(--t-brand, var(--orange-primary));
+}
+.td-reply {
+    text-align: center;
+    background: #fff3cd;
+    font-weight: 600;
+    color: #b45309;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   6. FILTER BAR  (speaker rankings toolbar)
+   ════════════════════════════════════════════════════════════ */
+.filter-bar {
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 15px;
+    margin-bottom: 20px;
+}
+.filter-bar__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+}
+.filter-bar__label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+.filter-bar__count {
+    background: var(--border);
+    color: var(--text-muted);
+    padding: 4px 10px;
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    font-weight: 600;
+}
+.filter-bar__actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
+    align-items: center;
+}
+.filter-bar__indicator {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--text-muted);
+    display: none;
+}
+.filter-bar__indicator.is-visible { display: block; }
+
+
+/* ════════════════════════════════════════════════════════════
+   7. DROPDOWN  (manage-menu in speakers tab)
+   main.css uses hover-based .dropdown-group + .dropdown-content.
+   This JS-toggled .dropdown + .dropdown-menu(.is-open) is different.
+   Items reuse .dropdown-item from main.css (no redeclaration here).
+   ════════════════════════════════════════════════════════════ */
+.dropdown { position: relative; display: inline-block; }
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    z-index: 200;
+    min-width: 200px;
+    overflow: hidden;
+}
+.dropdown-menu.is-open { display: block; }
+
+
+/* ════════════════════════════════════════════════════════════
+   8. EMPTY STATE
+   ════════════════════════════════════════════════════════════ */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+.empty-state__icon  { font-size: 48px; margin-bottom: 16px; }
+.empty-state__title {
+    margin: 0 0 8px;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.empty-state__desc { margin: 0; font-size: 0.9rem; }
+
+
+/* ════════════════════════════════════════════════════════════
+   9. SPEAKER SECTION
+   ════════════════════════════════════════════════════════════ */
+.speaker-section { overflow-x: auto; }
+.speaker-section + .speaker-section { margin-top: 30px; }
+
+
+/* ════════════════════════════════════════════════════════════
+   10. PROFILE
+   ════════════════════════════════════════════════════════════ */
+.profile-wrap {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    background: var(--bg-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+    flex-shrink: 0;
+    border: 2px solid var(--border);
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   11. STANDINGS  (teams tab)
+   ════════════════════════════════════════════════════════════ */
+.standings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+}
+
+.standings-filter-bar {
+    background: var(--bg-light);
+    padding: 14px 18px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 20px;
+    border: 1px solid var(--border);
+    display: flex;
+    gap: var(--spacing-md);
+    align-items: flex-end;
+    flex-wrap: wrap;
+}
+.standings-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.standings-filter-group--flex  { flex: 1; min-width: 180px; }
+.standings-filter-group--fixed { flex: 0 0 auto; min-width: 170px; }
+
+.standings-filter-label {
+    font-weight: 600;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+.standings-filter-select,
+.standings-filter-input {
+    width: 100%;
+    padding: 9px 10px;
+    border-radius: var(--radius-md);
+    border: 1.5px solid var(--border);
+    font-size: 14px;
+    font-family: inherit;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    transition: border-color var(--transition-fast),
+                box-shadow var(--transition-fast);
+}
+.standings-filter-select:focus,
+.standings-filter-input:focus {
+    outline: none;
+    border-color: var(--t-brand, var(--orange-primary));
+    box-shadow: 0 0 0 3px var(--t-brand-glow, var(--orange-glow));
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   12. MOTION CARDS
+   ════════════════════════════════════════════════════════════ */
+.motion-card {
+    background: var(--bg-card);
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+}
+.motion-card + .motion-card { margin-top: 20px; }
+
+.motion-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+.motion-card__badge {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    color: #ffffff;
+}
+.motion-card__badge--prelim   { background: var(--t-brand, var(--orange-primary)); }
+.motion-card__badge--knockout { background: var(--danger); }
+
+.motion-card__body {
+    padding: 16px;
+    background: var(--bg-light);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--t-brand, var(--orange-primary));
+}
+.motion-card__text {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-primary);
+    font-style: italic;
+    line-height: 1.5;
+}
+.motion-card__infoslide {
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   13. RESULT CARDS
+   ════════════════════════════════════════════════════════════ */
+.result-card {
+    background: var(--bg-card);
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+}
+.result-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.result-debate {
+    background: var(--bg-light);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+}
+.result-debate + .result-debate { margin-top: 20px; }
+
+.result-debate__sides {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+.result-debate__team  { flex: 1; text-align: center; }
+.result-debate__vs    { font-weight: 700; color: var(--border); white-space: nowrap; }
+
+.result-debate__score {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+.result-debate__score--winner { color: var(--success); }
+
+
+/* ════════════════════════════════════════════════════════════
+   14. BREAK DISPLAY
+   ════════════════════════════════════════════════════════════ */
+.break-table-wrap {
+    background: var(--bg-card);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+}
+.break-table-header {
+    background: linear-gradient(135deg, #1e293b, #334155);
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+/* Override h2 orange border inside the dark header */
+.break-table-header h2,
+.break-table-title {
+    margin: 0;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 700;
+    border-left: none !important;
+    padding-left: 0 !important;
+}
+.break-table-sub { margin: 4px 0 0; color: rgba(255,255,255,0.6); font-size: 13px; }
+
+.break-badge {
+    background: rgba(245,158,11,0.2);
+    color: #f59e0b;
+    padding: 6px 16px;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 14px;
+    border: 1px solid rgba(245,158,11,0.3);
+    white-space: nowrap;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   15. INELIGIBLE TOOLTIP
+   ════════════════════════════════════════════════════════════ */
+.inelig-wrap { position: relative; display: inline-flex; }
+.inelig-tip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 0;
+    background: #1e293b;
+    color: #ffffff;
+    padding: 6px 10px;
+    border-radius: var(--radius-md);
+    font-size: 11px;
+    white-space: nowrap;
+    z-index: 100;
+    box-shadow: var(--shadow-lg);
+    pointer-events: none;
+    min-width: 160px;
+}
+.inelig-tip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 12px;
+    border: 5px solid transparent;
+    border-top-color: #1e293b;
+}
+.inelig-wrap:hover .inelig-tip { display: block; }
+
+
+/* ════════════════════════════════════════════════════════════
+   16. BULK-DISABLE MODAL ELEMENTS
+   main.css owns .modal-overlay  .modal  .modal-header  .modal-footer
+   ════════════════════════════════════════════════════════════ */
+.bulk-disable-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 10px;
+    margin-bottom: 20px;
+}
+.bulk-disable-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+.bulk-disable-row:last-child { border-bottom: none; }
+.bulk-disable-row:hover { background: var(--bg-light); }
+
+.bulk-disable-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: var(--t-brand, var(--orange-primary));
+    flex-shrink: 0;
+}
+.bulk-disable-count {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-left: 8px;
+}
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+
+
+/* ════════════════════════════════════════════════════════════
+   17. UTILITY SUPPLEMENTS
+
+   ════════════════════════════════════════════════════════════ */
+.u-overflow-x  { overflow-x: auto; }
+.u-text-center { text-align: center; }
+.u-text-muted  { color: var(--text-muted); }
+.u-text-faint  { color: var(--text-muted); opacity: 0.7; }
+.u-text-primary{ color: var(--t-brand, var(--orange-primary)); }
+.u-text-danger { color: var(--danger); }
+.u-text-warning{ color: var(--warning); }
+.u-fw-600 { font-weight: 600; }
+.u-fw-700 { font-weight: 700; }
+.u-fw-800 { font-weight: 800; }
+.u-font-mono { font-family: monospace; }
+.u-mt-0  { margin-top: 0 !important; }
+.u-mb-0  { margin-bottom: 0 !important; }
+.u-mb-sm { margin-bottom: var(--spacing-sm) !important; }
+.u-mb-md { margin-bottom: var(--spacing-md) !important; }
+.u-mb-lg { margin-bottom: var(--spacing-lg) !important; }
+.u-mb-xl { margin-bottom: var(--spacing-xl) !important; }
+.u-mt-lg { margin-top: var(--spacing-lg) !important; }
+.u-mt-xl { margin-top: var(--spacing-xl) !important; }
+
+
+/* ════════════════════════════════════════════════════════════
+   18. DARK-THEME OVERRIDES
+   Applied when body.theme-dark is set by main.css theme system.
+   Only covers the new components defined in this file.
+   ════════════════════════════════════════════════════════════ */
+body.theme-dark .card,
+body.theme-dark .data-table,
+body.theme-dark .filter-bar,
+body.theme-dark .standings-filter-bar,
+body.theme-dark .motion-card,
+body.theme-dark .motion-card__body,
+body.theme-dark .result-card,
+body.theme-dark .result-debate,
+body.theme-dark .break-table-wrap,
+body.theme-dark .bulk-disable-list,
+body.theme-dark .dropdown-menu {
+    background: var(--surface, #1e293b) !important;
+    border-color: var(--border, #334155) !important;
+    color: var(--text, #f1f5f9) !important;
+}
+body.theme-dark .form-input,
+body.theme-dark .form-select,
+body.theme-dark .standings-filter-select,
+body.theme-dark .standings-filter-input {
+    background: var(--surface, #1e293b) !important;
+    color: var(--text, #f1f5f9) !important;
+    border-color: var(--border, #334155) !important;
+}
+body.theme-dark .td-accent,
+body.theme-dark .th-accent {
+    background: rgba(249,115,22,0.12) !important;
+}
+body.theme-dark .data-table--dark-head thead tr {
+    background: #0a1020 !important;
+}
+body.theme-dark .break-table-header {
+    background: linear-gradient(135deg, #060d1a, #0f172a) !important;
+}

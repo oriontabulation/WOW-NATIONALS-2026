@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orion Debate Tab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">    
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="stylesheet" href="css/patches.css">
+    <link rel="stylesheet" href="css/app-styles.css">
+    <script type="module" src="js/main.js" defer></script>
+    <script src="js/patches.js" defer></script>
+</head>
+<body> 
+    <!-- HEADER -->
+    <header>
+        <div class="header-container">
+            <div class="header-logo" onclick="switchTab('public')"><img src="IMG/logo.png" alt="orion logo" class="logo-image"></div>
+
+            <div class="header-search">
+                <input type="text" placeholder="Search teams, judges, rounds..." id="global-search">
+            </div>
+
+            <div class="header-controls">
+                <div class="header-user" onclick="switchTab('profile')">
+                    👤 <span id="current-user-name">Guest</span>
+                </div>
+                <button class="btn-primary" id="login-btn">Login</button>
+                <button onclick="logout()" class="btn-secondary" id="logout-btn" style="display: none;">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- DROPDOWN MENU -->
+    <div class="dropdown-menu-container">
+        <!-- Home -->
+        <div class="dropdown-group">
+            <button class="dropdown-trigger" onclick="switchTab('public')">🏠 Home</button>
+        </div>
+                <!-- Standings (becomes dropdown when categories exist) -->
+        <div class="dropdown-group" id="standings-nav-group">
+            <button class="dropdown-trigger" onclick="switchTab('standings')">📊 Standings</button>
+        </div>
+                     <!-- Speakers (becomes dropdown when categories exist) -->
+        <div class="dropdown-group" id="speakers-nav-group">
+            <button class="dropdown-trigger" onclick="switchTab('speakers')">🎤 Speakers</button>
+        </div>
+           <!--Draw Section -->
+        <div class="dropdown-group">
+            <button class="dropdown-trigger"onclick="switchTab('draw')">🎲 Draw</button> 
+        </div>
+        
+          <!-- Outrounds (break items expand when categories exist) -->
+        <div class="dropdown-group" id="outrounds-nav-group">
+            <button class="dropdown-trigger">⚔️ Outrounds ▾</button>
+            <div class="dropdown-content">
+                <button class="dropdown-item" onclick="switchTab('break')">🏆 Break</button>
+                <button class="dropdown-item" onclick="switchTab('knockout')">⚔️ Knockout</button>
+            </div>
+        </div> 
+
+        <!-- Results Group -->
+        <div class="dropdown-group">
+            <button class="dropdown-trigger">📊 Results ▾</button>
+            <div class="dropdown-content">
+                <button class="dropdown-item" onclick="switchTab('results')">✅ Results</button>
+                <button class="dropdown-item" onclick="switchTab('motions')">📜 Motions</button>
+            </div>
+        </div>       
+         
+        <!-- More Group -->
+        <div class="dropdown-group">
+            <button class="dropdown-trigger">☰ More ▾</button>
+            <div class="dropdown-content">
+                <button class="dropdown-item" onclick="switchTab('teams')">👥 Teams</button>
+                <button class="dropdown-item" onclick="switchTab('judges')">⚖️ Judges</button>
+                <button class="dropdown-item" onclick="switchTab('portal')">🚪 Portal</button>
+                <button class="dropdown-item" onclick="switchTab('profile')">👤 Profile</button>
+                <button class="dropdown-item" onclick="switchTab('feedback')">💬 Feedback</button>
+                <button class="dropdown-item" onclick="switchTab('import')">📤 Import</button>
+            </div>
+        </div>
+        <!-- Admin Group (hidden by default) -->
+        <div class="dropdown-group admin-group" id="admin-dropdown-group" style="display: none;">
+            <button class="dropdown-trigger" onclick="switchTab('admin-dashboard')">⚙️ Admin Panel</button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        <!-- PUBLIC TAB -->
+        <div id="public" class="tab-content active">
+            <div class="section">
+                <h1>Welcome to Orion Debate Tab</h1>
+                <p class="section-subtitle">
+                    Professional debate tournament tabulation system from Mindcraft Africa
+                </p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <h3>Teams</h3>
+                        <div class="stat-value" id="public-team-count">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚖️</div>
+                        <h3>Judges</h3>
+                        <div class="stat-value" id="public-judge-count">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <h3>Rounds</h3>
+                        <div class="stat-value" id="public-round-count">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STANDINGS TAB -->
+        <div id="standings" class="tab-content">
+            <div class="section">
+                <h1>📊 Tournament Standings</h1>
+                <div id="standings-container" class="content-container"></div>
+            </div>
+        </div>
+
+        <!-- PROFILE TAB -->
+        <div id="profile" class="tab-content">
+            <div class="section">
+                <h1>👤 User Profile</h1>
+                <div id="profile-content" class="content-container"></div>
+            </div>
+        </div>
+
+        <!-- MOTIONS TAB -->
+        <div id="motions" class="tab-content">
+            <div class="section">
+                <h1>📜 Motions</h1>
+                <div id="motions-container" class="content-container"></div>
+            </div>
+        </div>
+
+        <!-- RESULTS TAB -->
+        <div id="results" class="tab-content">
+            <div class="section">
+                <h1>✅ Results</h1>
+                <div id="results-container" class="content-container"></div>
+            </div>
+        </div>
+
+        <!-- TEAMS TAB -->
+        <div id="teams" class="tab-content">
+            <div class="section">
+                <h1>👥 Teams</h1>
+                <div id="teams-container" class="content-container"></div>
+            </div>
+        </div>
+
+        <!-- JUDGES TAB -->
+        <div id="judges" class="tab-content">
+            <div class="section">
+                <h1>⚖️ Judges</h1>
+                <div id="judges-container" class="content-container"></div>
+            </div>
+        </div>
+
+        <!-- DRAW TAB -->
+        <div id="draw" class="tab-content">
+            <div class="section">
+                <h1>🎲 Draw</h1>
+                <div id="draw-container" class="content-container"></div>
+            </div>
+        </div>
+
+        <!-- BREAK TAB -->
+        <div id="break" class="tab-content">
+            <div class="section">
+           
+                <div id="break-container" class="content-container"></div>
+            </div>
+        </div>
+
+        <!-- KNOCKOUT TAB -->
+        <div id="knockout" class="tab-content">
+            <div class="section">
+                <h1>⚔️ Knockout</h1>
+                <div id="knockout-container" class="content-container"></div>
+            </div>
+        </div>
+
+        <!-- IMPORT TAB -->
+        <div id="import" class="tab-content">
+           
+                <h2>📤 Import Data</h2>
+                <div id="import-container" class="content-container"></div>
+            
+        </div>
+
+        <!-- FEEDBACK TAB -->
+        <div id="feedback" class="tab-content">
+           
+                <h2>💬 Feedback</h2>
+                <div id="feedback-container" class="content-container"></div>
+          
+        </div>
+
+        <!-- PORTAL TAB -->
+        <div id="portal" class="tab-content">
+        
+                <h2>🚪 Portal</h2>
+                <div id="portal-container" class="content-container"></div>
+           
+        </div>
+
+        <!-- SPEAKERS TAB -->
+        <div id="speakers" class="tab-content">                       
+                <div id="speaker-rankings" class="content-container"></div>       
+        </div>
+
+        <!-- ADMIN DASHBOARD TAB -->
+        <div id="admin-dashboard" class="tab-content">
+            <div class="section">
+                <h1>⚙️ Admin Dashboard</h1>
+                <div id="admin-dashboard-container" class="content-container"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- LOGIN/REGISTER MODAL -->
+    <div id="auth-modal" class="modal" style="display: none;">
+        <div class="modal-overlay" onclick="closeModal()">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <div class="modal-icon">🎯</div>
+                    <h2>Welcome to Orion</h2>
+                </div>
+                
+                <!-- Tab Buttons -->
+                <div class="modal-tabs">
+                    <button id="loginTabBtn" onclick="switchAuthTab('login')" class="modal-tab active">Login</button>
+                    <button id="registerTabBtn" onclick="switchAuthTab('register')" class="modal-tab">Register</button>
+                </div>
+                
+                <!-- LOGIN FORM -->
+                <div id="loginForm" class="modal-form">
+                    <div id="loginError" class="error-message" style="display: none;"></div>
+                    
+                    <div class="form-group">
+                        <label for="loginUsername">Username</label>
+                        <input type="text" id="loginUsername" placeholder="Enter username">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter password">
+                    </div>
+                    
+                    <button onclick="handleLogin()" class="btn-primary btn-block">Login</button>
+                    <button onclick="guestLogin()" class="btn-secondary btn-block">Continue as Guest</button>
+                </div>
+                
+                <!-- REGISTER FORM -->
+                <div id="registerForm" class="modal-form" style="display: none;">
+                    <div id="registerError" class="error-message" style="display: none;"></div>
+                    
+                    <div class="form-group">
+                        <label for="registerName">Full Name</label>
+                        <input type="text" id="registerName" placeholder="Enter full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" placeholder="Enter email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerUsername">Username</label>
+                        <input type="text" id="registerUsername" placeholder="Choose username">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <input type="password" id="registerPassword" placeholder="Password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerConfirmPassword">Confirm Password</label>
+                        <input type="password" id="registerConfirmPassword" placeholder="Confirm password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="registerRole">Role</label>
+                        <select id="registerRole">
+                            <option value="public">Observer</option>
+                            <option value="judge">Judge</option>
+                            <option value="team">Debater</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="registerTerms">
+                        <label for="registerTerms">I agree to the Terms of Service</label>
+                    </div>
+                    
+                    <button onclick="registerUser()" class="btn-success btn-block">Create Account</button>
+                </div>
+                
+                <div class="modal-footer">
+                    <button onclick="closeModal()" class="btn-link">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>About Orion</h3>
+                <p>Professional tournament tabulation system with enhanced features from Mindcraft Africa.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Features</h3>
+                <p><a href="#" onclick="switchTab('import')">Auto Imports</a></p>
+                <p><a href="#" onclick="switchTab('profile')">User Profile</a></p>
+                <p><a href="#" onclick="switchTab('admin-dashboard')">Admin Dashboard</a></p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>📧 <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4c3f393c3c233e380c233e25232228292e2d3829622f2321">[email&#160;protected]</a></p>
+                <p>X @oriondebate</p>
+                <p>📱 (+256) 776268432</p>
+            </div>
+            <div class="footer-section">
+                <h3>Resources</h3>
+                <p><a href="#">📚 Documentation</a></p>
+                <p><a href="#">❓ FAQ</a></p>
+                <p><a href="#">🆘 Support</a></p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © 2026 Orion Debate Tabulation System. All rights reserved. | 
+            <a href="#">Privacy Policy</a> | 
+            <a href="#">Terms of Service</a>

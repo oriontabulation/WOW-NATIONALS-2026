@@ -1,0 +1,67 @@
+{
+  "name": "orion-debate-tab",
+  "version": "1.0.0",
+  "description": "Tournament tab management for debate competitions",
+  "main": "main-electron.js",
+  "author": "Mindcraft",
+  "license": "MIT",
+  "private": true,
+
+  "type": "commonjs",
+
+  "scripts": {
+    "start":     "electron .",
+    "build":     "electron-builder --win",
+    "build:dir": "electron-builder --win --dir"
+  },
+
+  "build": {
+    "appId": "com.mindcraft.oriondebate",
+    "productName": "Orion Debate Tab",
+
+    "files": [
+      "main-electron.js",
+      "main.html",
+      "js/**/*",
+      "css/**/*",
+      "IMG/**/*",
+      "fonts/**/*",
+      "!node_modules/.cache/**",
+      "!**/*.map",
+      "!.git/**",
+      "!dist/**"
+    ],
+
+    "directories": {
+      "output": "dist"
+    },
+
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "IMG/icon.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "IMG/icon.ico",
+      "uninstallerIcon": "IMG/icon.ico",
+      "installerHeaderIcon": "IMG/icon.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Orion Debate Tab"
+    }
+  },
+
+  "devDependencies": {
+    "electron": "^29.0.0",
+    "electron-builder": "^24.0.0"
+  }
+}
